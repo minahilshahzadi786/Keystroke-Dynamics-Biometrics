@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KeyPulse AI - Sub-Millisecond Behavioral Biometric Authentication Engine</title>
+  <meta name="description" content="Sub-millisecond behavioral biometric authentication engine measuring Dwell and Flight times using variance-weighted Z-score distance.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Telemetry Status Bar -->
+    <div class="telemetry-bar">
+      <div class="telemetry-status">
+        <div class="pulse-dot"></div>
+        <span>ENGINE STATUS: OPERATIONAL</span>
+        <span style="opacity: 0.4;">|</span>
+        <span>PRECISION: SUB-MS (PERFORMANCE.NOW)</span>
+      </div>
+      <div>
+        <span>ISO/IEC 19792 COMPLIANT BIOMETRICS</span>
+      </div>
+    </div>
+
+    <!-- Top Navigation Header -->
+    <header class="top-navbar">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div>
+          <h1 class="brand-title">KeyPulse AI</h1>
+          <div class="brand-subtitle">Sub-Millisecond Behavioral Biometrics Engine</div>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <!-- Feature 4: Profile Switcher -->
+        <div class="profile-select-wrapper">
+          <span style="font-size: 0.85rem;">👤</span>
+          <select id="user-profile-select" class="profile-select" onchange="switchUserProfile(this.value)">
+            <option value="owner">Profile: Owner Baseline</option>
+            <option value="bob">Profile: Demo User 2 (Bob - Fast)</option>
+            <option value="charlie">Profile: Demo User 3 (Charlie - Slow)</option>
+          </select>
+        </div>
+
+        <nav class="nav-tabs" role="tablist">
+          <button class="tab-btn active" id="tab-btn-enroll" onclick="switchTab('enroll')">
+            <span>🛡</span> Enrollment Studio
+          </button>
+          <button class="tab-btn" id="tab-btn-verify" onclick="switchTab('verify')">
+            <span>⚡</span> Verification Lab
+          </button>
+          <button class="tab-btn" id="tab-btn-analytics" onclick="switchTab('analytics')">
+            <span>📊</span> Biometric Analytics
+          </button>
+        </nav>
+
+        <button class="btn-cheat-sheet" onclick="toggleCheatSheet(true)">
+          <span>🎓</span> Mentor Defense Guide
+        </button>
+      </div>
+    </header>
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: ENROLLMENT STUDIO                                            -->
+    <!-- =================================================================== -->
+    <main id="tab-enroll" class="tab-content active">
+      <div class="grid-two-col">
+
+        <!-- Enrollment Control & Interactive Recorder -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">🎯</span> Step 1: Baseline Registration
+            </h2>
+            <span id="enrollment-status-badge" style="font-size: 0.8rem; color: var(--text-dim);">Status: Not Enrolled</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="target-password-input">Target Password / Keyphrase</label>
+            <div class="input-wrapper">
+              <input type="text" id="target-password-input" class="input-field" value="p@ss123" placeholder="Enter target password..." onchange="updateTargetPassword()">
+            </div>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Set target password string to train against (e.g., <code>p@ss123</code> or <code>cybersecurity</code>).
+            </p>
+          </div>
+
+          <div class="progress-banner">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Enrollment Progress</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted);" id="enroll-progress-text">0 of 5 practice attempts captured</div>
+            </div>
+            <div class="step-tracker" id="step-tracker-dots">
+              <div class="step-dot active"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+              <div class="step-dot"></div>
+            </div>
+          </div>
+
+          <!-- Typing Recorder -->
+          <div class="typing-recording-area" id="recording-box">
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent-blue); font-weight: 700; margin-bottom: 0.5rem;">
+              Type exact keyphrase below naturally:
+            </div>
+            <div class="password-prompt-badge" id="prompt-display">p@ss123</div>
+
+            <div class="form-group" style="margin: 0 auto; max-width: 360px;">
+              <input type="password" id="enroll-typing-input" class="input-field" placeholder="Type here..." autocomplete="off" spellcheck="false">
+            </div>
+
+            <div class="live-key-stream" id="enroll-key-stream">
+              <!-- Dynamically populated key bubble timing pills -->
+            </div>
+          </div>
+
+          <!-- Virtual Keyboard Heatmap Stream -->
+          <div class="keyboard-visualizer">
+            <div style="font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; text-align: center;">
+              Interactive Key Dwell Map
+            </div>
+            <div class="keyboard-row">
+              <div class="key-cap" id="keycap-q">Q</div>
+              <div class="key-cap" id="keycap-w">W</div>
+              <div class="key-cap" id="keycap-e">E</div>
+              <div class="key-cap" id="keycap-r">R</div>
+              <div class="key-cap" id="keycap-t">T</div>
+              <div class="key-cap" id="keycap-y">Y</div>
+              <div class="key-cap" id="keycap-u">U</div>
+              <div class="key-cap" id="keycap-i">I</div>
+              <div class="key-cap" id="keycap-o">O</div>
+              <div class="key-cap" id="keycap-p">P</div>
+            </div>
+            <div class="keyboard-row">
+              <div class="key-cap" id="keycap-a">A</div>
+              <div class="key-cap" id="keycap-s">S</div>
+              <div class="key-cap" id="keycap-d">D</div>
+              <div class="key-cap" id="keycap-f">F</div>
+              <div class="key-cap" id="keycap-g">G</div>
+              <div class="key-cap" id="keycap-h">H</div>
+              <div class="key-cap" id="keycap-j">J</div>
+              <div class="key-cap" id="keycap-k">K</div>
+              <div class="key-cap" id="keycap-l">L</div>
+            </div>
+            <div class="keyboard-row">
+              <div class="key-cap" id="keycap-z">Z</div>
+              <div class="key-cap" id="keycap-x">X</div>
+              <div class="key-cap" id="keycap-c">C</div>
+              <div class="key-cap" id="keycap-v">V</div>
+              <div class="key-cap" id="keycap-b">B</div>
+              <div class="key-cap" id="keycap-n">N</div>
+              <div class="key-cap" id="keycap-m">M</div>
+              <div class="key-cap" id="keycap-1">1</div>
+              <div class="key-cap" id="keycap-2">2</div>
+              <div class="key-cap" id="keycap-3">3</div>
+            </div>
+          <!-- Feature 3: Adaptive Baseline Learning Toggle -->
+          <div class="toggle-switch-group">
+            <div>
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Rolling Adaptive Baseline Mode</div>
+              <div style="font-size: 0.73rem; color: var(--text-muted);">Auto-update baseline profile (μ, σ) on every successful login</div>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="adaptive-baseline-toggle" checked onchange="toggleAdaptiveBaseline(this.checked)">
+              <span class="slider-round"></span>
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.25rem;">
+            <button class="btn-primary" id="btn-save-enrollment" onclick="finalizeEnrollment()" disabled>
+              <span>💾</span> Save & Build Biometric Baseline
+            </button>
+            <button class="btn-secondary" onclick="resetEnrollment()">
+              <span>🔄</span> Reset
+            </button>
+          </div>
+        </section>
+
+        <!-- Stored Baseline Vectors Table -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">📐</span> Biometric Feature Baseline Matrix
+            </h2>
+            <span style="font-size: 0.75rem; color: var(--accent-blue); font-weight: 600;" id="vector-count-label">0 Features Recorded</span>
+          </div>
+
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Per-feature Mean ($\mu$) and Standard Deviation ($\sigma$) extracted from enrollment attempts with $\epsilon=10\text{ms}$ smoothing.
+          </p>
+
+          <div class="feature-table-container">
+            <table class="table" id="baseline-table">
+              <thead>
+                <tr>
+                  <th>Feature Type</th>
+                  <th>Key / Gap</th>
+                  <th>Mean ($\mu$)</th>
+                  <th>StdDev ($\sigma$)</th>
+                  <th>Weight</th>
+                </tr>
+              </thead>
+              <tbody id="baseline-table-body">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 2rem;">
+                    No enrollment baseline built yet. Complete 5 practice attempts on the left.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: VERIFICATION LAB                                             -->
+    <!-- =================================================================== -->
+    <main id="tab-verify" class="tab-content">
+      <div class="grid-two-col">
+
+        <!-- Login Input & Imposter Controls -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">🔑</span> Stage 1 & 2 Auth Pipeline
+            </h2>
+            <span class="tag-dwell" style="font-size: 0.75rem;">Sub-ms Precision</span>
+          </div>
+
+          <div class="imposter-toolbar">
+            <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 700; display: flex; align-items: center; margin-right: 0.5rem;">
+              IMPOSTER TEST MODES:
+            </span>
+            <button class="btn-imposter" onclick="simulateImposter('bot')">
+              <span>🤖</span> Uniform Bot
+            </button>
+            <button class="btn-imposter" onclick="simulateImposter('paste')">
+              <span>📋</span> Paste Attack
+            </button>
+            <button class="btn-imposter" onclick="simulateImposter('altered')">
+              <span>🐢</span> Altered Rhythm
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="verify-typing-input">Enter Password for Login Authentication</label>
+            <input type="password" id="verify-typing-input" class="input-field" placeholder="Type password..." autocomplete="off" spellcheck="false">
+          </div>
+
+          <div class="live-key-stream" id="verify-key-stream" style="min-height: 40px;">
+            <!-- Live timing pills for verify attempt -->
+          </div>
+
+          <div style="margin-top: 1.25rem;">
+            <button class="btn-primary" onclick="processVerification()">
+              <span>⚡</span> Authenticate Biometrics
+            </button>
+          </div>
+        </section>
+
+        <!-- Auth Result Panel -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">🛡</span> Biometric Verification Outcome
+            </h2>
+            <span id="stage1-hash-badge" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-dim);">
+              Stage 1 Hash: Waiting
+            </span>
+          </div>
+
+          <div class="result-card" id="result-card-container">
+            <div class="result-header">
+              <div class="result-status-badge" id="result-status-text">
+                <span>🔒</span> Awaiting Login Attempt
+              </div>
+              <span id="distance-score-badge" style="font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: var(--text-muted);">
+                Distance: --
+              </span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted);" id="result-explanation">
+              Type password in the test box to trigger Stage 1 password hash verification and Stage 2 keystroke dynamics distance calculation.
+            </p>
+
+            <div class="score-meter-container">
+              <div class="score-label-row">
+                <span>Biometric Match Confidence</span>
+                <span id="match-percent-label">0%</span>
+              </div>
+              <div class="score-track">
+                <div class="score-fill green" id="score-progress-bar"></div>
+              </div>
+            </div>
+
+            <!-- Feature 2: Export Audit Report Button -->
+            <div style="margin-top: 1rem; text-align: right;">
+              <button class="btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.8rem;" onclick="toggleAuditReport(true)">
+                <span>📄</span> Export Security Audit Certificate
+              </button>
+            </div>
+          </div>
+
+          <!-- Feature Anomaly Inspection -->
+          <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
+              Feature Anomaly Breakdown
+            </h4>
+            <div id="anomaly-list" style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--text-dim);">
+              No login attempt evaluated yet.
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: BIOMETRIC ANALYTICS & THRESHOLD TUNER                       -->
+    <!-- =================================================================== -->
+    <main id="tab-analytics" class="tab-content">
+      <div class="grid-two-col">
+
+        <!-- Chart Section -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">📈</span> Dwell vs. Flight Timing Overlay
+            </h2>
+            <span style="font-size: 0.75rem; color: var(--accent-blue);">Azure: Baseline Mean | Purple: Attempt</span>
+          </div>
+
+          <div class="chart-wrapper">
+            <canvas id="timing-chart"></canvas>
+          </div>
+        </section>
+
+        <!-- Threshold Tuning Controls -->
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <span class="card-title-icon">⚙</span> Sensitivity & Threshold Tuning
+            </h2>
+          </div>
+
+          <div class="stat-grid">
+            <div class="stat-box">
+              <div class="stat-val" id="stat-far">0.02%</div>
+              <div class="stat-lbl">Est. FAR</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="stat-frr">1.10%</div>
+              <div class="stat-lbl">Est. FRR</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="stat-eer">0.56%</div>
+              <div class="stat-lbl">Target EER</div>
+            </div>
+          </div>
+
+          <div class="slider-container">
+            <div class="slider-label">
+              <span>Distance Threshold ($T_{max}$)</span>
+              <span id="threshold-val-display" style="color: var(--accent-blue); font-family: var(--font-mono); font-weight: 700;">2.50</span>
+            </div>
+            <input type="range" min="0.5" max="8.0" step="0.1" value="2.5" class="custom-range" id="threshold-slider" oninput="updateThreshold(this.value)">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-dim); margin-top: 0.3rem;">
+              <span>Strict Security (Low FAR)</span>
+              <span>Balanced</span>
+              <span>High Convenience (Low FRR)</span>
+            </div>
+          </div>
+
+          <div class="viva-box" style="margin-top: 1.5rem; border-left-color: var(--accent-blue);">
+            <div class="viva-q">Z-Score Distance Formula:</div>
+            <div style="margin-top: 0.3rem;">
+              <code class="math-code">Distance = ∑ (|Attempt_i - μ_i| / (σ_i + ε))</code>
+            </div>
+            <p class="viva-a" style="margin-top: 0.4rem;">
+              Features with lower standard deviations ($\sigma_i$) get higher weight because they represent stable, established muscle memory patterns.
+            </p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- STEP-UP 2FA OTP MODAL                                              -->
+  <!-- =================================================================== -->
+  <div class="modal-overlay" id="stepup-otp-modal">
+    <div class="modal-card" style="max-width: 480px; text-align: center;">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: var(--status-warning);">⚠️ Step-Up Auth Triggered</h3>
+        <button class="btn-close" onclick="closeOtpModal()">&times;</button>
+      </div>
+
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+        Password hash verified, but typing micro-rhythm anomaly detected. Enter the 6-digit OTP sent to your registered phone:
+      </p>
+
+      <div style="background: rgba(59, 130, 246, 0.1); border: 1px dashed var(--accent-blue); padding: 0.8rem; border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 1.4rem; font-weight: 800; color: var(--accent-blue); letter-spacing: 0.2em; margin-bottom: 0.5rem;" id="simulated-otp-code">
+        849201
+      </div>
+      <div style="font-size: 0.72rem; color: var(--text-dim); margin-bottom: 1.5rem;">
+        (Demo Mode: Simulated OTP sent to user's mobile device)
+      </div>
+
+      <div class="form-group">
+        <input type="text" id="otp-input-field" class="input-field" placeholder="Enter 6-digit OTP..." maxlength="6" style="text-align: center; font-size: 1.3rem; letter-spacing: 0.2em;">
+      </div>
+
+      <button class="btn-primary" onclick="verifyOtpCode()">
+        <span>🔓</span> Complete Step-Up Verification
+      </button>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- MENTAL CHEAT SHEET / VIVA DEFENSE MODAL                            -->
+  <!-- =================================================================== -->
+  <div class="modal-overlay" id="cheat-sheet-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">🎓 Mentor Presentation & Defense Guide</h3>
+        <button class="btn-close" onclick="toggleCheatSheet(false)">&times;</button>
+      </div>
+
+      <div class="viva-box">
+        <div class="viva-q">Q1: What are the two core features of Keystroke Dynamics?</div>
+        <div class="viva-a">
+          1. <strong>Dwell Time ($D_k$):</strong> The duration a key is held down ($release(k) - press(k)$).<br>
+          2. <strong>Flight Time ($F_{k1,k2}$):</strong> The latency between releasing key 1 and pressing key 2 ($press(k2) - release(k1)$). Can be negative during fast rollover typing!
+        </div>
+      </div>
+
+      <div class="viva-box">
+        <div class="viva-q">Q2: Why use Variance-Weighted Distance instead of simple Euclidean distance?</div>
+        <div class="viva-a">
+          Simple Euclidean distance treats all key gaps equally. But some gaps vary naturally (e.g. shift key switches), while others are extremely consistent. Weighting by standard deviation ($\sigma_i$) penalizes deviations on your most stable keys much more heavily.
+        </div>
+      </div>
+
+      <div class="viva-box">
+        <div class="viva-q">Q3: How do you prevent division by zero when standard deviation is zero?</div>
+        <div class="viva-a">
+          We apply <strong>$\epsilon$-smoothing</strong> ($\epsilon = 10\text{ms}$). The variance-weighted formula becomes: 
+          <code class="math-code">|attempt_i - μ_i| / (σ_i + ε)</code>. This ensures numerical stability.
+        </div>
+      </div>
+
+      <div class="viva-box">
+        <div class="viva-q">Q4: What real-world standards govern behavioral biometrics?</div>
+        <div class="viva-a">
+          Behavioral biometrics are governed by <strong>ISO/IEC 19792</strong> (Biometric Performance Testing) and NIST risk-based continuous authentication guidelines.
+        </div>
+      </div>
+
+      <div style="text-align: right; margin-top: 1.5rem;">
+        <button class="btn-primary" style="width: auto; padding: 0.6rem 1.5rem; display: inline-flex;" onclick="toggleCheatSheet(false)">
+          Got It, Back to Presentation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================================================================== -->
+  <!-- FEATURE 2: PRINTABLE SECURITY AUDIT CERTIFICATE MODAL             -->
+  <!-- =================================================================== -->
+  <div class="modal-overlay" id="audit-report-modal">
+    <div class="modal-card certificate-modal" style="max-width: 750px;">
+      <div class="modal-header" style="border-bottom: 2px solid #0f172a;">
+        <div>
+          <h2 style="font-size: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em;">KeyPulse AI - Security Audit Certificate</h2>
+          <div style="font-size: 0.78rem; color: #475569;">ISO/IEC 19792 Behavioral Biometrics Compliance Report</div>
+        </div>
+        <button class="btn-close" style="color: #0f172a;" onclick="toggleAuditReport(false)">&times;</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; font-size: 0.85rem; border-bottom: 1px solid #cbd5e1; padding-bottom: 1rem;">
+        <div><strong>Certificate ID:</strong> <span id="audit-cert-id">KP-8942-X9</span></div>
+        <div><strong>Timestamp:</strong> <span id="audit-cert-time">2026-07-28 11:20:00</span></div>
+        <div><strong>Active Profile:</strong> <span id="audit-cert-profile">Owner Baseline</span></div>
+        <div><strong>Primary Hash (SHA-256):</strong> <span id="audit-cert-hash" style="font-family: monospace;">PASSED ✓</span></div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 1.25rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <div style="font-size: 0.8rem; text-transform: uppercase; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">Biometric Metric Outcome</div>
+        <div style="font-size: 1.4rem; font-weight: 800;" id="audit-cert-status">✅ ACCESS GRANTED</div>
+        <div style="font-size: 0.85rem; color: #334155; margin-top: 0.3rem;" id="audit-cert-explanation">
+          Z-Score distance (0.84) is below threshold (2.50). Keystroke micro-rhythm matches owner baseline.
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #0f172a; padding-top: 1.5rem;">
+        <div>
+          <div style="font-size: 0.75rem; color: #64748b;">AUTHENTICATED BY KEYPULSE ENGINE v2.4</div>
+          <div style="font-size: 0.75rem; color: #64748b;">SUB-MILLISECOND TELEMETRY VERIFIED</div>
+        </div>
+        <button class="btn-primary" style="width: auto; padding: 0.6rem 1.5rem; background: #0f172a; color: #fff;" onclick="window.print()">
+          <span>🖨️</span> Print / Save PDF Certificate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
